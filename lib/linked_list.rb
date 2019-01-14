@@ -6,11 +6,23 @@ class LinkedList
     @head = nil
   end
 
+  def [](index)
+    node = @head
+    index.times do
+      if !node.next
+        return nil
+      else
+        node = node.next
+      end
+    end
+    node
+  end
+
   def each
     node = @head
 
     while !node.nil?
-      yield(node.data)
+      yield(node)
       node = node.next
     end
   end
@@ -19,17 +31,45 @@ class LinkedList
     @head = Node.new(value, @head)
   end
 
+  def append(value)
+    if @head
+      find_tail.next = Node.new(value)
+    else
+      @head = Node.new(value)
+    end
+  end
+
+  def to_s
+    text = "LinkedList("
+    names = []
+    self.each do |node|
+      names << node.info
+    end
+    text += names.join(", ") + ")"
+    return text
+  end
+
   def find_tail
     node = @head
     return node if !node.next
     return node if !node.next while (node = node.next)
   end
 
-  def append(value)
-    if @head
-      find_tail.next = Node.new(value)
+  def node_at(node, position, counter=0)
+    return node if position == counter
+    node_at(node.next, position, counter += 1)
+  end
+
+  def insert(position, value)
+    if node_at(@head, position - 1).nil?
+      prepend(value)
     else
-      @head = Node.new(value)
+      node = Node.new(value)
+      prior_node = node_at(@head, position - 1)
+      next_node = node_at(@head, position)
+      prior_node.next = node
+      node.next = next_node
+      return node
     end
   end
 
@@ -42,7 +82,7 @@ class LinkedList
     end
   end
 
-  def delete(value)
+  def remove(value)
     if @head.value == value
       @head = @head.next
       return
