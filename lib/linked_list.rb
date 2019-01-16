@@ -61,42 +61,38 @@ class LinkedList
   end
 
   def insert(position, value)
-    if node_at(@head, position - 1).nil?
-      prepend(value)
+    if position == 0
+      self.prepend(value)
     else
-      node = Node.new(value)
-      prior_node = node_at(@head, position - 1)
-      next_node = node_at(@head, position)
-      prior_node.next = node
-      node.next = next_node
-      return node
+      prev_node = @head
+      (position - 1).times do
+        prev_node = prev_node.next_node
+      end
+
+      following_node = prev_node.next_node
+      new_node = Node.new(value, following_node)
+      prev_node.next = new_node
     end
   end
 
-  def find(value)
-    node = @head
-    return false if !node.next
-    return node  if node.value == value
-    while (node = node.next)
-      return node if node.value == value
+  def remove(position)
+    if position == 0
+      @head = self[position].next_node
+    else
+      prev_node = self[position - 1]
+      this_node = self[position]
+      next_node = self[position + 1]
+      prev_node.next = next_node
+      this_node.next = nil
     end
-  end
-
-  def remove(value)
-    if @head.value == value
-      @head = @head.next
-      return
-    end
-    node      = find_before(value)
-    node.next = node.next.next
   end
 
   def find_before(value)
     node = @head
     return false if !node.next
-    return node  if node.next.value == value
+    return node  if node.next.data == value
     while (node = node.next)
-      return node if node.next && node.next.value == value
+      return node if node.next && node.next.data == value
     end
   end
 
